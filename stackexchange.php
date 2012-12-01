@@ -25,6 +25,53 @@ class stackexchange
         }
     }
 
+    /*
+     * Custom Methods
+     */
+
+    public function  getAnswers($mode='all', $idList='', $requestParams = array()) {
+        $methodsArray = array();
+        $mainMethodArray = array(
+            'name' => 'answers'
+        );
+
+        switch ($mode){
+            case 'selection':
+                if(!empty($idList)) {
+                    if(is_string($idList)){
+                        $mainMethodArray['filter'] = $idList;
+                        array_push($methodsArray,$mainMethodArray);
+                    } else
+                        return new Exception('The ID list should be a string!');
+                } else {
+                    return new Exception('No answer IDs given to select!');
+                }
+                break;
+            case 'comments':
+                if(!empty($idList)) {
+                    $mainMethodArray['filter'] = $idList;
+                    $secondMethodArray = array(
+                        'name' => 'comments'
+                    );
+                    array_push($methodsArray,$mainMethodArray);
+                    array_push($methodsArray,$secondMethodArray);
+                } else {
+                    return new Exception('No answer IDs given to select!');
+                }
+                break;
+            default:
+                array_push($methodsArray,$mainMethodArray);
+                break;
+        }
+
+        $answers = $this->makeAPIRequest($methodsArray,$requestParams);
+        return $answers;
+    }
+
+    /*
+     * Fundamental Methods
+     */
+
     /**
      * makeAPIRequest covers the whole request task
      * @param array $requestParams : This is an array containing all request params
@@ -62,10 +109,13 @@ class stackexchange
         //Add methods to $requestURL
         if(!empty($methodsArray)){
             //Method Array is set and contains at least one item --> get the first (main) item/method
-            $mainMethodObject = $methodsArray[0];
-            $requestURL .= $this->addMethodToURL($mainMethodObject);
+            for($i=0;$i<count($methodsArray);$i++){
+                if($i > 0) {
+                    $requestURL .= '/';
+                }
 
-            //TODO: Support for second, third methods
+                $requestURL .= $this->addMethodToURL($methodsArray[$i]);
+            }
         }
 
         //If API Token is set, add it to the request parameters
@@ -77,6 +127,10 @@ class stackexchange
         if(!empty($requestParams)){
            $requestURL .= $this->addParamsToURL($requestParams);
         }
+
+
+        //Dev output $requestURL
+        //var_dump($requestURL);
 
         //Send request
         $data = file_get_contents($requestURL);
