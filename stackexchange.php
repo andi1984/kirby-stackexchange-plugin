@@ -52,21 +52,28 @@ class stackexchange
                 if(!empty($idList)) {
                     if(is_string($idList)){
                         $mainMethodArray['filter'] = $idList;
+
                         array_push($methodsArray,$mainMethodArray);
-                    } else
+                    } else {
                         return new Exception('The ID list should be a string!');
+                    }
                 } else {
                     return new Exception('No answer IDs given to select!');
                 }
                 break;
             case 'comments':
                 if(!empty($idList)) {
-                    $mainMethodArray['filter'] = $idList;
-                    $secondMethodArray = array(
-                        'name' => 'comments'
-                    );
-                    array_push($methodsArray,$mainMethodArray);
-                    array_push($methodsArray,$secondMethodArray);
+                    if(is_string($idList)){
+                        $mainMethodArray['filter'] = $idList;
+                        $secondMethodArray = array(
+                            'name' => 'comments'
+                        );
+
+                        array_push($methodsArray,$mainMethodArray);
+                        array_push($methodsArray,$secondMethodArray);
+                    } else {
+                        return new Exception('The ID list should be a string!');
+                    }
                 } else {
                     return new Exception('No answer IDs given to select!');
                 }
