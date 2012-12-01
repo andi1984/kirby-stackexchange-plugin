@@ -29,6 +29,18 @@ class stackexchange
      * Custom Methods
      */
 
+    /**
+     * @param string $mode (default 'all'): Defines the mode under which the answers method should be used, see answers section under http://api.stackexchange.com/docs
+     *
+     * There are three modes
+     * mode 'all' corresponds to http://api.stackexchange.com/docs/answers
+     * mode 'selection' corresponds to http://api.stackexchange.com/docs/answers-by-ids
+     * mode 'comments' corresponds to http://api.stackexchange.com/docs/comments-on-answers
+     * @param string $idList (optional): A list of answer ids to filter (mendatory for mode 'selection' or 'comments'
+     * @param array $requestParams: The general request parameters
+     * @return Exception|string
+     */
+
     public function  getAnswers($mode='all', $idList='', $requestParams = array()) {
         $methodsArray = array();
         $mainMethodArray = array(
