@@ -11,7 +11,7 @@ And the cherry on the cake is… Stack Exchange provides a really good [API](htt
 
 Why?
 ----
-So the last months I personally used Stack Exchange (in special Stack Overflow) a lot and a wish arose that it would be nice to show StackExchange Posts, Comments, Profiles etc. live on a Website without taking pictures of posts or copying text passages.
+So the last months I personally used Stack Exchange (in special Stack Overflow) a lot and the wish arose to show StackExchange Posts, Comments, Profiles etc. live on a Website without taking pictures of posts or copying text passages.
 
 Furthermore I got in contact with [Kirby CMS](https://github.com/bastianallgeier/kirbycms "Kirby CMS") the last few weeks and I love to use this lightweight tool for personal usage.
 
@@ -33,9 +33,13 @@ You can use your key for requests by adding your API Key when you construct your
 
 `$stackExchangeObj = new stackexchange('YOUR API KEY');`
 
-The plugin will use your api key for all further requests. But again: that's optional. You don't need it.
+The plugin will use your api key for all further requests.
+
+But again: The key parameter is optional. You don't need it.
 
 Furthermore I plan to add a nice data output structure for release 1.0.
+
+*So please let me know about your use cases, how you would use it or which features you want to have. This would be a really great help to get the right structure and features.*
 
 Finally
 -----
