@@ -30,6 +30,35 @@ class stackexchange
      */
 
     /**
+     * getAllAnswers simply gives you all answers on a specific site specified with site parameter in requestParams.
+     * @param $requestParams: The general request parameters
+     * @return Exception|string
+     */
+    public function getAllAnswers($requestParams) {
+        return $this->getAnswers('all','',$requestParams);
+    }
+
+    /**
+     * getAnswersByIDs returns all answers objects specified by the IDs contained in the semicolon separated string $ids
+     * @param $ids: Semicolon separated string with all answer IDs you want to get returned
+     * @param $requestParams: The general request parameters
+     * @return Exception|string
+     */
+    public function getAnswersByIDs($ids,$requestParams){
+        return $this->getAnswers('selection',$ids,$requestParams);
+    }
+
+    /**
+     * getCommentsForAnswersWithIDs returns all comments for answers specified by IDs in the $ids parameter
+     * @param $ids: Semicolon separated string with all answer IDs
+     * @param $requestParams: The general request parameters
+     * @return Exception|string
+     */
+    public function getCommentsForAnswersWithIDs($ids,$requestParams){
+        return $this->getAnswers('comments',$ids,$requestParams);
+    }
+
+    /**
      * @param string $mode (default 'all'): Defines the mode under which the answers method should be used, see answers section under http://api.stackexchange.com/docs
      *
      * There are three modes
@@ -41,7 +70,11 @@ class stackexchange
      * @return Exception|string
      */
 
-    public function  getAnswers($mode='all', $idList='', $requestParams = array()) {
+	/*
+     * Global Object Methods
+     */
+
+    protected function  getAnswers($mode='all', $idList='', $requestParams = array()) {
         $methodsArray = array();
         $mainMethodArray = array(
             'name' => 'answers'
