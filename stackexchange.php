@@ -29,6 +29,7 @@ class stackexchange
      * Custom Methods
      */
 
+	/* Answer Methods */
     /**
      * getAllAnswers simply gives you all answers on a specific site specified with site parameter in requestParams.
      * @param $requestParams: The general request parameters
@@ -40,7 +41,7 @@ class stackexchange
 
     /**
      * getAnswersByIDs returns all answers objects specified by the IDs contained in the semicolon separated string $ids
-     * @param $ids: Semicolon separated string with all answer IDs you want to get returned
+     * @param $ids: Semicolon separated string with all answer IDs you want to filter
      * @param $requestParams: The general request parameters
      * @return Exception|string
      */
@@ -58,22 +59,118 @@ class stackexchange
         return $this->getAnswers('comments',$ids,$requestParams);
     }
 
-    /**
-     * @param string $mode (default 'all'): Defines the mode under which the answers method should be used, see answers section under http://api.stackexchange.com/docs
-     *
-     * There are three modes
-     * mode 'all' corresponds to http://api.stackexchange.com/docs/answers
-     * mode 'selection' corresponds to http://api.stackexchange.com/docs/answers-by-ids
-     * mode 'comments' corresponds to http://api.stackexchange.com/docs/comments-on-answers
-     * @param string $idList (optional): A list of answer ids to filter (mendatory for mode 'selection' or 'comments'
-     * @param array $requestParams: The general request parameters
-     * @return Exception|string
-     */
+	/* Question Methods */
+	/**
+	 * Gets all the questions on the site.
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getAllQuestions($requestParams) {
+		return $this->getQuestions('all','',$requestParams);
+	}
+
+	/**
+	 * Returns all the questions with active bounties in the system.
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getFeaturedQuestions($requestParams){
+		return $this->getQuestions('featured',$requestParams);
+	}
+
+	/**
+	 * Returns questions the site considers to be unanswered.
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getUnansweredQuestions($requestParams){
+		return $this->getQuestions('unanswered',$requestParams);
+	}
+
+	/**
+	 * Returns questions which have received no answers.
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getQuestionsWithNoAnswers($requestParams){
+		return $this->getQuestions('no-answers',$requestParams);
+	}
+
+	/**
+	 * Returns the questions identified in $ids
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getQuestionsByIDs($ids,$requestParams) {
+		return $this->getQuestions('selection',$ids,$requestParams);
+	}
+
+	/**
+	 * Gets the answers to a set of questions identified in $ids.
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getAnswersForQuestionsWithIDs($ids,$requestParams){
+		return $this->getQuestions('answers',$ids,$requestParams);
+	}
+
+	/**
+	 * Gets the comments on question identified in $ids.
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getCommentsForQuestionsWithIDs($ids,$requestParams){
+		return $this->getQuestions('comments',$ids,$requestParams);
+	}
+
+	/**
+	 * Get the questions that link to the questions identified by a set of $ids.
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getLinkedQuestionsForQuestionsWithIDs($ids,$requestParams){
+		return $this->getQuestions('linked',$ids,$requestParams);
+	}
+
+	/**
+	 * Get the questions that are related to the questions identified by a set of $ids.
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getRelatedQuestionsForQuestionsWithIDs($ids,$requestParams){
+		return $this->getQuestions('related',$ids,$requestParams);
+	}
+
+	/**
+	 * Get the timelines of the questions identified by a set of $ids.
+	 * @param $ids: Semicolon separated string with all question IDs you want to filter
+	 * @param $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	public function getTimelinesOfQuestionsWithIDs($ids,$requestParams){
+		return $this->getQuestions('timeline',$ids,$requestParams);
+	}
 
 	/*
      * Global Object Methods
      */
 
+	/**
+	 * @param string $mode (default 'all'): Defines the mode under which the answers method should be used, see answers section under http://api.stackexchange.com/docs
+	 *
+	 * There are three modes
+	 * mode 'all' corresponds to http://api.stackexchange.com/docs/answers
+	 * mode 'selection' (*) corresponds to http://api.stackexchange.com/docs/answers-by-ids
+	 * mode 'comments' (*) corresponds to http://api.stackexchange.com/docs/comments-on-answers
+	 * @param string $idList: A list of answer ids to filter (mendatory for (*)-marked modes)
+	 * @param array $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
     protected function  getAnswers($mode='all', $idList='', $requestParams = array()) {
         $methodsArray = array();
         $mainMethodArray = array(
@@ -119,6 +216,170 @@ class stackexchange
         $answers = $this->makeAPIRequest($methodsArray,$requestParams);
         return $answers;
     }
+
+	/**
+	 * @param string $mode (default 'all'): Defines the mode under which the questions method should be used, see questions section under http://api.stackexchange.com/docs
+	 * There are ten modes
+	 * mode 'all' corresponds to https://api.stackexchange.com/docs/questions
+	 * mode 'selection' (*) corresponds to https://api.stackexchange.com/docs/questions-by-ids
+	 * mode 'answers' (*) corresponds to https://api.stackexchange.com/docs/answers-on-questions
+	 * mode 'comments' (*) corresponds to https://api.stackexchange.com/docs/comments-on-questions
+	 * mode 'linked' (*) corresponds to https://api.stackexchange.com/docs/linked-questions
+	 * mode 'related' (*) corresponds to https://api.stackexchange.com/docs/related-questions
+	 * mode 'timeline' (*) corresponds to https://api.stackexchange.com/docs/questions-timeline
+	 * mode 'featured' corresponds to https://api.stackexchange.com/docs/featured-questions
+	 * mode 'unanswered' corresponds to https://api.stackexchange.com/docs/unanswered-questions
+	 * mode 'no-answers' corresponds to https://api.stackexchange.com/docs/no-answer-questions
+	 * @param string $idList (optional): A list of question ids to filter (mendatory for (*)-marked modes)
+	 * @param array $requestParams: The general request parameters
+	 * @return Exception|string
+	 */
+	protected function getQuestions($mode='all', $idList='', $requestParams = array()) {
+		$methodsArray = array();
+		$mainMethodArray = array(
+			'name' => 'questions'
+		);
+
+		switch ($mode){
+			case 'selection':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+
+						array_push($methodsArray,$mainMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'answers':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+						$secondMethodArray = array(
+							'name' => 'answers'
+						);
+
+						array_push($methodsArray,$mainMethodArray);
+						array_push($methodsArray,$secondMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'comments':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+						$secondMethodArray = array(
+							'name' => 'comments'
+						);
+
+						array_push($methodsArray,$mainMethodArray);
+						array_push($methodsArray,$secondMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'linked':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+						$secondMethodArray = array(
+							'name' => 'linked'
+						);
+
+						array_push($methodsArray,$mainMethodArray);
+						array_push($methodsArray,$secondMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'related':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+						$secondMethodArray = array(
+							'name' => 'related'
+						);
+
+						array_push($methodsArray,$mainMethodArray);
+						array_push($methodsArray,$secondMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'timeline':
+				if(!empty($idList)) {
+					if(is_string($idList)){
+						$mainMethodArray['filter'] = $idList;
+						$secondMethodArray = array(
+							'name' => 'timeline'
+						);
+
+						array_push($methodsArray,$mainMethodArray);
+						array_push($methodsArray,$secondMethodArray);
+					} else {
+						return new Exception('The ID list should be a string!');
+					}
+				} else {
+					return new Exception('No answer IDs given to select!');
+				}
+				break;
+
+			case 'featured':
+				$secondMethodArray = array(
+					'name' => 'featured'
+				);
+
+				array_push($methodsArray,$mainMethodArray);
+				array_push($methodsArray,$secondMethodArray);
+				break;
+
+			case 'unanswered':
+				$secondMethodArray = array(
+					'name' => 'unanswered'
+				);
+
+				array_push($methodsArray,$mainMethodArray);
+				array_push($methodsArray,$secondMethodArray);
+				break;
+
+			case 'no-answers':
+				$secondMethodArray = array(
+					'name' => 'no-answers'
+				);
+
+				array_push($methodsArray,$mainMethodArray);
+				array_push($methodsArray,$secondMethodArray);
+				break;
+
+			default:
+				array_push($methodsArray,$mainMethodArray);
+				break;
+		}
+
+		$answers = $this->makeAPIRequest($methodsArray,$requestParams);
+		return $answers;
+	}
 
     /*
      * Fundamental Methods
