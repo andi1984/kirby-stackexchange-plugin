@@ -368,6 +368,8 @@ class stackexchange
      * Fundamental Methods
      */
 
+
+
 	/**
 	 * isValidFilterList makes a raw validation check for filtering lists and throws
 	 * corresponding exceptions if they are not valid
@@ -375,7 +377,7 @@ class stackexchange
 	 * @return bool (is this a valid list)
 	 * @throws Exception
 	 */
-	public function isValidFilterList($list){
+	protected function isValidFilterList($list){
 		if(!empty($list)) {
 			if(is_string($list)){
 				return true;
