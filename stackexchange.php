@@ -179,32 +179,14 @@ class stackexchange
 
         switch ($mode){
             case 'selection':
-	            try{
-		            if($this->isValidFilterList($idList)){
-			            $mainMethodArray['filter'] = $idList;
-			            array_push($methodsArray,$mainMethodArray);
-		            }
-	            } catch (Exception $e){
-		            return $e;
-	            }
+	            $this->addMethodToMethodsArray($methodsArray,'answers',$idList);
                 break;
             case 'comments':
-	            try {
-		            if($this->isValidFilterList($idList)){
-			            $mainMethodArray['filter'] = $idList;
-			            $secondMethodArray = array(
-				            'name' => 'comments'
-			            );
-
-			            array_push($methodsArray,$mainMethodArray);
-			            array_push($methodsArray,$secondMethodArray);
-		            }
-	            } catch (Exception $e){
-		            return $e;
-	            }
+	            $this->addMethodToMethodsArray($methodsArray,'answers',$idList);
+	            $this->addMethodToMethodsArray($methodsArray,'comments');
                 break;
             default:
-                array_push($methodsArray,$mainMethodArray);
+	            $this->addMethodToMethodsArray($methodsArray,'answers');
                 break;
         }
 
@@ -231,132 +213,55 @@ class stackexchange
 	 */
 	protected function getQuestions($mode='all', $idList='', $requestParams = array()) {
 		$methodsArray = array();
-		$mainMethodArray = array(
-			'name' => 'questions'
-		);
 
 		switch ($mode){
 			case 'selection':
-				try{
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-
-						array_push($methodsArray,$mainMethodArray);
-					}
-				} catch (Exception $e){
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
 				break;
 
 			case 'answers':
-				try {
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-						$secondMethodArray = array(
-							'name' => 'answers'
-						);
-
-						array_push($methodsArray,$mainMethodArray);
-						array_push($methodsArray,$secondMethodArray);
-					}
-				} catch (Exception $e) {
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
+				$this->addMethodToMethodsArray($methodsArray,'answers');
 				break;
 
 			case 'comments':
-				try {
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-						$secondMethodArray = array(
-							'name' => 'comments'
-						);
-
-						array_push($methodsArray,$mainMethodArray);
-						array_push($methodsArray,$secondMethodArray);
-					}
-				} catch (Exception $e) {
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
+				$this->addMethodToMethodsArray($methodsArray,'comments');
 				break;
 
 			case 'linked':
-				try {
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-						$secondMethodArray = array(
-							'name' => 'linked'
-						);
-
-						array_push($methodsArray,$mainMethodArray);
-						array_push($methodsArray,$secondMethodArray);
-					}
-				} catch (Exception $e) {
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
+				$this->addMethodToMethodsArray($methodsArray,'linked');
 				break;
 
 			case 'related':
-				try {
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-						$secondMethodArray = array(
-							'name' => 'related'
-						);
-
-						array_push($methodsArray,$mainMethodArray);
-						array_push($methodsArray,$secondMethodArray);
-					}
-				} catch (Exception $e) {
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
+				$this->addMethodToMethodsArray($methodsArray,'related');
 				break;
 
 			case 'timeline':
-				try {
-					if($this->isValidFilterList($idList)){
-						$mainMethodArray['filter'] = $idList;
-						$secondMethodArray = array(
-							'name' => 'timeline'
-						);
-
-						array_push($methodsArray,$mainMethodArray);
-						array_push($methodsArray,$secondMethodArray);
-					}
-				} catch (Exception $e) {
-					return $e;
-				}
+				$this->addMethodToMethodsArray($methodsArray,'questions',$idList);
+				$this->addMethodToMethodsArray($methodsArray,'timeline');
 				break;
 
 			case 'featured':
-				$secondMethodArray = array(
-					'name' => 'featured'
-				);
+				$this->addMethodToMethodsArray($methodsArray,'questions');
+				$this->addMethodToMethodsArray($methodsArray,'featured');
 
-				array_push($methodsArray,$mainMethodArray);
-				array_push($methodsArray,$secondMethodArray);
 				break;
 
 			case 'unanswered':
-				$secondMethodArray = array(
-					'name' => 'unanswered'
-				);
-
-				array_push($methodsArray,$mainMethodArray);
-				array_push($methodsArray,$secondMethodArray);
+				$this->addMethodToMethodsArray($methodsArray,'questions');
+				$this->addMethodToMethodsArray($methodsArray,'unanswered');
 				break;
 
 			case 'no-answers':
-				$secondMethodArray = array(
-					'name' => 'no-answers'
-				);
-
-				array_push($methodsArray,$mainMethodArray);
-				array_push($methodsArray,$secondMethodArray);
+				$this->addMethodToMethodsArray($methodsArray,'questions');
+				$this->addMethodToMethodsArray($methodsArray,'no-answers');
 				break;
 
 			default:
-				array_push($methodsArray,$mainMethodArray);
+				$this->addMethodToMethodsArray($methodsArray,'questions');
 				break;
 		}
 
@@ -368,7 +273,31 @@ class stackexchange
      * Fundamental Methods
      */
 
+	/**
+	 * addMethodToMethodsArray adds a new main or sub method to the methodsArray
+	 * @param $methodsArray: The methodsArray where main & submethods are stored in. This method will
+	 * update this array directly
+	 * @param $methodName: The name of the method you want to add
+	 * @param null $methodFilters (optional): An optional parameter used to submit an object ID filter for this method
+	 */
+	protected function addMethodToMethodsArray(&$methodsArray,$methodName,$methodFilters=null) {
+		$methodArray = array(
+			'name' => $methodName
+		);
 
+		if(isset($methodFilters)) {
+			try {
+				if($this->isValidFilterList($methodFilters)){
+					$methodArray['filter'] = $methodFilters;
+				}
+			} catch (Exception $e) {
+				//TODO: Think about an exception return strategy. At the moment simply output error message.
+				echo 'Exception in '.$e->getFile().' at line '.$e->getLine().': '.$e->getMessage().$e->get;
+			}
+		}
+
+		array_push($methodsArray,$methodArray);
+	}
 
 	/**
 	 * isValidFilterList makes a raw validation check for filtering lists and throws
