@@ -179,34 +179,29 @@ class stackexchange
 
         switch ($mode){
             case 'selection':
-                if(!empty($idList)) {
-                    if(is_string($idList)){
-                        $mainMethodArray['filter'] = $idList;
-
-                        array_push($methodsArray,$mainMethodArray);
-                    } else {
-                        return new Exception('The ID list should be a string!');
-                    }
-                } else {
-                    return new Exception('No answer IDs given to select!');
-                }
+	            try{
+		            if($this->isValidFilterList($idList)){
+			            $mainMethodArray['filter'] = $idList;
+			            array_push($methodsArray,$mainMethodArray);
+		            }
+	            } catch (Exception $e){
+		            return $e;
+	            }
                 break;
             case 'comments':
-                if(!empty($idList)) {
-                    if(is_string($idList)){
-                        $mainMethodArray['filter'] = $idList;
-                        $secondMethodArray = array(
-                            'name' => 'comments'
-                        );
+	            try {
+		            if($this->isValidFilterList($idList)){
+			            $mainMethodArray['filter'] = $idList;
+			            $secondMethodArray = array(
+				            'name' => 'comments'
+			            );
 
-                        array_push($methodsArray,$mainMethodArray);
-                        array_push($methodsArray,$secondMethodArray);
-                    } else {
-                        return new Exception('The ID list should be a string!');
-                    }
-                } else {
-                    return new Exception('No answer IDs given to select!');
-                }
+			            array_push($methodsArray,$mainMethodArray);
+			            array_push($methodsArray,$secondMethodArray);
+		            }
+	            } catch (Exception $e){
+		            return $e;
+	            }
                 break;
             default:
                 array_push($methodsArray,$mainMethodArray);
@@ -242,22 +237,20 @@ class stackexchange
 
 		switch ($mode){
 			case 'selection':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try{
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 
 						array_push($methodsArray,$mainMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e){
+					return $e;
 				}
 				break;
 
 			case 'answers':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try {
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 						$secondMethodArray = array(
 							'name' => 'answers'
@@ -265,17 +258,15 @@ class stackexchange
 
 						array_push($methodsArray,$mainMethodArray);
 						array_push($methodsArray,$secondMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e) {
+					return $e;
 				}
 				break;
 
 			case 'comments':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try {
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 						$secondMethodArray = array(
 							'name' => 'comments'
@@ -283,17 +274,15 @@ class stackexchange
 
 						array_push($methodsArray,$mainMethodArray);
 						array_push($methodsArray,$secondMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e) {
+					return $e;
 				}
 				break;
 
 			case 'linked':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try {
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 						$secondMethodArray = array(
 							'name' => 'linked'
@@ -301,17 +290,15 @@ class stackexchange
 
 						array_push($methodsArray,$mainMethodArray);
 						array_push($methodsArray,$secondMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e) {
+					return $e;
 				}
 				break;
 
 			case 'related':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try {
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 						$secondMethodArray = array(
 							'name' => 'related'
@@ -319,17 +306,15 @@ class stackexchange
 
 						array_push($methodsArray,$mainMethodArray);
 						array_push($methodsArray,$secondMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e) {
+					return $e;
 				}
 				break;
 
 			case 'timeline':
-				if(!empty($idList)) {
-					if(is_string($idList)){
+				try {
+					if($this->isValidFilterList($idList)){
 						$mainMethodArray['filter'] = $idList;
 						$secondMethodArray = array(
 							'name' => 'timeline'
@@ -337,11 +322,9 @@ class stackexchange
 
 						array_push($methodsArray,$mainMethodArray);
 						array_push($methodsArray,$secondMethodArray);
-					} else {
-						return new Exception('The ID list should be a string!');
 					}
-				} else {
-					return new Exception('No answer IDs given to select!');
+				} catch (Exception $e) {
+					return $e;
 				}
 				break;
 
@@ -384,6 +367,25 @@ class stackexchange
     /*
      * Fundamental Methods
      */
+
+	/**
+	 * isValidFilterList makes a raw validation check for filtering lists and throws
+	 * corresponding exceptions if they are not valid
+	 * @param $list: A list of object ids
+	 * @return bool (is this a valid list)
+	 * @throws Exception
+	 */
+	public function isValidFilterList($list){
+		if(!empty($list)) {
+			if(is_string($list)){
+				return true;
+			} else {
+				throw new Exception('The ID list should be a string!');
+			}
+		} else {
+			throw new Exception('No answer IDs given to select!');
+		}
+	}
 
     /**
      * makeAPIRequest covers the whole request task
