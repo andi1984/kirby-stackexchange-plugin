@@ -75,7 +75,7 @@ class stackexchange
 	 * @return Exception|string
 	 */
 	public function getFeaturedQuestions($requestParams){
-		return $this->getQuestions('featured',$requestParams);
+		return $this->getQuestions('featured','',$requestParams);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class stackexchange
 	 * @return Exception|string
 	 */
 	public function getUnansweredQuestions($requestParams){
-		return $this->getQuestions('unanswered',$requestParams);
+		return $this->getQuestions('unanswered','',$requestParams);
 	}
 
 	/**
@@ -93,7 +93,7 @@ class stackexchange
 	 * @return Exception|string
 	 */
 	public function getQuestionsWithNoAnswers($requestParams){
-		return $this->getQuestions('no-answers',$requestParams);
+		return $this->getQuestions('no-answers','',$requestParams);
 	}
 
 	/**
