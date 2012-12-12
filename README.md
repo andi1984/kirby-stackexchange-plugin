@@ -1,6 +1,11 @@
 Kirby CMS - Stack Exchange Plugin (in progess)
 ==========================
 
+News
+----
+- Support for question and answer requests is integrated. Further object type integrations will follow soon…
+- Raw Kirby Integration done -> but it needs a more user-friendly integration (see [Setup-Wiki](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/Plugin-Setup) for more details)
+
 What?
 ----
 > Stack Exchange is a fast-growing network of 92 question and answer sites on diverse topics from software programming to cooking to photography and gaming.
@@ -40,6 +45,8 @@ But again: The key parameter is optional. You don't need it.
 Furthermore I plan to add a nice data output structure for release 1.0.
 
 *So please let me know about your use cases, how you would use it or which features you want to have. This would be a really great help to get the right structure and features.*
+
+For more information, see the [Setup-Wiki-Page](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/Plugin-Setup)
 
 Finally
 -----
