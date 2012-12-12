@@ -2,7 +2,7 @@
 	//Create new stackexchangeAPI Object (insert your API Key here as parameter, e.g.new stackexchange('XXXXXXX'))
 	$stackExchangeAPI = new stackexchange();
 
-	//Fetch mandatory values from current page object
+	//Fetch values from current page object
 	$siteList = (string)(str_replace(' ','',$page->stackexchangesite()));
 	$siteArray = explode(',',$siteList);
 
