@@ -1,8 +1,27 @@
-Title: Hello World
+Title: StackExchange API Test Page
 
 ----
 
 Text:
+
+This is a StackExchange API Test page.
+
 ----
 
-Author: Andreas Sander
+stackexchangesite: travel
+
+----
+
+stackexchangemethod: answers-on-questions
+
+----
+
+stackexchangemethodids: 7770
+
+----
+
+stackexchangefilter:withbody
+
+----
+
+stackexchangeoutput: body
