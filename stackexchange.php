@@ -369,6 +369,11 @@ class stackexchange
             $requestParams['key'] = $this->token;
         }
 
+	    //If no filter is set, add withbody filter to provide support for more, than default filter, properties
+	    if(!isset($requestParams['filter']) || empty($requestParams['filter'])){
+		    $requestParams['filter'] = 'withbody';
+	    }
+
         //Add params to $requestURL
         if(!empty($requestParams)){
            $requestURL .= $this->addParamsToURL($requestParams);
