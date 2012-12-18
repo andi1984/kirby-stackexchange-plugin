@@ -20,8 +20,4 @@ stackexchangemethodids: 7770
 
 ----
 
-stackexchangefilter:withbody
-
-----
-
 stackexchangeoutput: body
