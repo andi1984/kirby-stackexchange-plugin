@@ -371,7 +371,7 @@ class stackexchange
 
 	    //If no filter is set, add withbody filter to provide support for more, than default filter, properties
 	    if(!isset($requestParams['filter']) || empty($requestParams['filter'])){
-		    $requestParams['filter'] = 'withbody';
+		    $requestParams['filter'] = '!u2RTCfmEkd5U5X)PV32_dNh.(2UmCi6';
 	    }
 
         //Add params to $requestURL
@@ -387,7 +387,7 @@ class stackexchange
         $data = file_get_contents($requestURL);
         if($data !== false){
             //Data received --> Return it json decoded
-            return json_decode($data);
+            return json_decode($data, true);
         } else {
             return new Exception('API Request failed!');
         }
