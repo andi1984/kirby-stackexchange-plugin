@@ -136,26 +136,47 @@
 			$outputKeyArray = explode(',',(string)$outputKeys);
 
 			//Foreach result object..
-			foreach($requestData->items as $item){
-				$stackAPIOutput .= '<div class="'.$requestDataType.'">';
-				//... output the requested property keys
-				foreach($outputKeyArray as $key){
-					$valueForKey = $item->$key;
-					if(isset($valueForKey)){
-						$stackAPIOutput .= '<div class="'.$key.'">';
-						if(!is_object($valueForKey)){
-							$stackAPIOutput .= $valueForKey;
+			foreach($requestData['items'] as $item){
+				$itemID = $item[$requestDataType.'_id'];
+				$stackAPIOutput .= '<div id="stackexchange-'.$requestDataType.'-'.$itemID.'" class="stackexchange-item">';
 
-						} else {
-							foreach($valueForKey as $arrayKey => $arrayKeyValue){
-								$stackAPIOutput .= '<div class="'.$arrayKey.'">';
-								$stackAPIOutput .= $arrayKeyValue;
-								$stackAPIOutput .= '</div>';
-							}
-						}
-						$stackAPIOutput .= '</div>';
-					}
+				//Set link to the requested object url
+				if(isset($item['link']) && isset($item['title']) && isset($item['creation_date'])) {
+					$stackAPIOutput .= '<div class="stackexchange-object-link-wrapper">';
+						$stackAPIOutput .= '<a href="'.$item['link'].'" title="'.$item['title'].'" id="'.$requestDataType.'-'.$itemID.'-link" class="stackexchange-object-link" target="_blank">';
+						$stackAPIOutput .= date('d.m.Y',$item['creation_date']);
+						$stackAPIOutput .= '</a>';
+					$stackAPIOutput .= '</div>';
 				}
+
+					//... output the requested property keys
+					foreach($outputKeyArray as $key){
+						$valueForKey = $item[$key];
+						if(isset($valueForKey)){
+							$stackAPIOutput .= '<div id="'.$requestDataType.'-'.$itemID.'-'.$key.'" class="'.$key.'">';
+							if(!is_array($valueForKey)){
+								$stackAPIOutput .= $valueForKey;
+
+							} else {
+								if($key == 'owner'){
+									$stackAPIOutput .= '<div class="stackexchange-user-banner-wrapper">';
+										$stackAPIOutput .= '<a href="'.$valueForKey['link'].'" class="stackexchange-user-banner">';
+											$stackAPIOutput .= '<img class="user-pic" src="'.$valueForKey['profile_image'].'"/>';
+											$stackAPIOutput .= '<span class="user-name">'.$valueForKey['display_name'].'</span>';
+										$stackAPIOutput .= '</a>';
+									$stackAPIOutput .= '</div>';
+								} else {
+									foreach($valueForKey as $arrayKey => $arrayKeyValue){
+										$stackAPIOutput .= '<div id="'.$key.'-'.$itemID.'-'.$arrayKey.'" class="'.$arrayKey.'">';
+											$stackAPIOutput .= $arrayKeyValue;
+										$stackAPIOutput .= '</div>';
+									}
+								}
+							}
+							$stackAPIOutput .= '</div>';
+						}
+					}
+
 				$stackAPIOutput .= '</div>';
 			}
 		}
