@@ -137,13 +137,21 @@
 
 			//Foreach result object..
 			foreach($requestData['items'] as $item){
-				$itemID = $item[$requestDataType.'_id'];
-				$stackAPIOutput .= '<div id="stackexchange-'.$requestDataType.'-'.$itemID.'" class="stackexchange-item">';
+				$itemID = (isset($item[$requestDataType.'_id'])?$item[$requestDataType.'_id']:null);
+				$stackAPIOutput .= '<div class="stackexchange-item"';
+					if(isset($itemID)){
+						$stackAPIOutput .= 'id="stackexchange-'.$requestDataType.'-'.$itemID.'"';
+					}
+				$stackAPIOutput .= '>';
 
 				//Set link to the requested object url
 				if(isset($item['link']) && isset($item['title']) && isset($item['creation_date'])) {
 					$stackAPIOutput .= '<div class="stackexchange-object-link-wrapper">';
-						$stackAPIOutput .= '<a href="'.$item['link'].'" title="'.$item['title'].'" id="'.$requestDataType.'-'.$itemID.'-link" class="stackexchange-object-link" target="_blank">';
+						$stackAPIOutput .= '<a href="'.$item['link'].'" title="'.$item['title'].'" class="stackexchange-object-link" target="_blank"';
+							if(isset($itemID)){
+								$stackAPIOutput .= 'id="'.$requestDataType.'-'.$itemID.'-link"';
+							}
+						$stackAPIOutput .= '>';
 						$stackAPIOutput .= date('d.m.Y',$item['creation_date']);
 						$stackAPIOutput .= '</a>';
 					$stackAPIOutput .= '</div>';
@@ -153,7 +161,11 @@
 					foreach($outputKeyArray as $key){
 						$valueForKey = $item[$key];
 						if(isset($valueForKey)){
-							$stackAPIOutput .= '<div id="'.$requestDataType.'-'.$itemID.'-'.$key.'" class="'.$key.'">';
+							$stackAPIOutput .= '<div class="'.$key.'"';
+								if(isset($itemID)){
+									$stackAPIOutput .= 'id="'.$requestDataType.'-'.$itemID.'-'.$key.'"';
+								}
+							$stackAPIOutput .= '>';
 							if(!is_array($valueForKey)){
 								$stackAPIOutput .= $valueForKey;
 
@@ -167,7 +179,11 @@
 									$stackAPIOutput .= '</div>';
 								} else {
 									foreach($valueForKey as $arrayKey => $arrayKeyValue){
-										$stackAPIOutput .= '<div id="'.$key.'-'.$itemID.'-'.$arrayKey.'" class="'.$arrayKey.'">';
+										$stackAPIOutput .= '<div class="'.$arrayKey.'"';
+											if(isset($itemID)) {
+												$stackAPIOutput .= 'id="'.$key.'-'.$itemID.'-'.$arrayKey.'"';
+											}
+										$stackAPIOutput .= '>';
 											$stackAPIOutput .= $arrayKeyValue;
 										$stackAPIOutput .= '</div>';
 									}
