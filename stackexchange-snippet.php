@@ -29,6 +29,7 @@
 		//Init parameters
 		$params = array();
 
+		//Check whether a site ID is specified to search at --> add it as 'site' URL-parameter
 		if(isset($siteArray[$index])){
 			$site = $siteArray[$index];
 			$params['site'] = $site;
@@ -44,90 +45,14 @@
 			$params['filter'] = $requestFilter;
 		}
 
-		//Add request logic
-		switch($method){
-			case 'answers':
-				$requestData = $stackExchangeAPI->getAllAnswers($params);
-				$requestDataType = 'answer';
-				break;
-			case 'answers-by-ids':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getAnswersByIDs($ids,$params);
-					$requestDataType = 'answer';
-				}
-				break;
-			case 'comments-on-answers':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getCommentsForAnswersWithIDs($ids,$params);
-					$requestDataType = 'comment';
-				}
-				break;
-			case 'questions':
-				$requestData = $stackExchangeAPI->getAllQuestions($params);
-				$requestDataType = 'question';
-				break;
-			case 'questions-by-ids':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getQuestionsByIDs($ids,$params);
-					$requestDataType = 'question';
-				}
-				break;
-			case 'answers-on-questions':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getAnswersForQuestionsWithIDs($ids,$params);
-					$requestDataType = 'answer';
-				}
-				break;
-			case 'comments-on-questions':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getCommentsForQuestionsWithIDs($ids,$params);
-					$requestDataType = 'comment';
-				}
-				break;
-			case 'linked-questions':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getLinkedQuestionsForQuestionsWithIDs($ids,$params);
-					$requestDataType = 'question';
-				}
-				break;
-			case 'related-questions':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getRelatedQuestionsForQuestionsWithIDs($ids,$params);
-					$requestDataType = 'question';
-				}
-				break;
-			case 'questions-timeline':
-				if(isset($methodFilteredIDArray[$index])){
-					$ids = $methodFilteredIDArray[$index];
-					$requestData = $stackExchangeAPI->getTimelinesOfQuestionsWithIDs($ids,$params);
-					$requestDataType = 'question_timeline';
-				}
-				break;
-			case 'featured-questions':
-				$requestData = $stackExchangeAPI->getFeaturedQuestions($params);
-				$requestDataType = 'question';
-				break;
-			case 'unanswered-questions':
-				$requestData = $stackExchangeAPI->getUnansweredQuestions($params);
-				$requestDataType = 'question';
-				break;
-			case 'no-answer-questions':
-				$requestData = $stackExchangeAPI->getQuestionsWithNoAnswers($params);
-				$requestDataType = 'question';
-				break;
-			default:
-				echo 'default';
-				break;
-		}
+		//Execute API request and save result
+		$result = $stackExchangeAPI->executeMethodWithURLPathName($method, $params, $methodFilteredIDArray[$index]);
 
-		//If the request fetched some data
+		//Save data and data-type inside corresponding variables
+		$requestData = $result['data'];
+		$requestDataType = $result['data-type'];
+
+		//If the request fetched some data --> output data
 		if(isset($requestData)){
 			//Get all requested object keys
 			$outputKeys = $methodOutputKeyListArray[$index];

@@ -24,16 +24,118 @@ class stackexchange
             $this->token = $_token;
         }
     }
-
+	
     /*
      * Custom Methods
      */
+
+	/**
+	 * @param   $methodPathName: That's the URL path name of the method.
+	 *          E.g. answers-by-ids in http://api.stackexchange.com/docs/answers-by-ids
+	 * @param array $params: The general request parameters
+	 * @param string $filteredIDList: Semicolon separated string with all object IDs which will be filtered
+	 * @return array: array containing the request result data and the type of data returned (e.g. an 'answer', 'question' etc.)
+	 */
+
+	public function executeMethodWithURLPathName($methodPathName, $params = array(), $filteredIDList=''){
+		//Initiate local variables
+		$requestData = NULL;
+		$requestDataType = NULL;
+
+		//Add request logic
+		switch($methodPathName){
+			case 'answers':
+				$requestData = $this->getAllAnswers($params);
+				$requestDataType = 'answer';
+				break;
+			case 'answers-by-ids':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getAnswersByIDs($ids,$params);
+					$requestDataType = 'answer';
+				}
+				break;
+			case 'comments-on-answers':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getCommentsForAnswersWithIDs($ids,$params);
+					$requestDataType = 'comment';
+				}
+				break;
+			case 'questions':
+				$requestData = $this->getAllQuestions($params);
+				$requestDataType = 'question';
+				break;
+			case 'questions-by-ids':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getQuestionsByIDs($ids,$params);
+					$requestDataType = 'question';
+				}
+				break;
+			case 'answers-on-questions':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getAnswersForQuestionsWithIDs($ids,$params);
+					$requestDataType = 'answer';
+				}
+				break;
+			case 'comments-on-questions':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getCommentsForQuestionsWithIDs($ids,$params);
+					$requestDataType = 'comment';
+				}
+				break;
+			case 'linked-questions':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getLinkedQuestionsForQuestionsWithIDs($ids,$params);
+					$requestDataType = 'question';
+				}
+				break;
+			case 'related-questions':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getRelatedQuestionsForQuestionsWithIDs($ids,$params);
+					$requestDataType = 'question';
+				}
+				break;
+			case 'questions-timeline':
+				if(isset($filteredIDList)){
+					$ids = $filteredIDList;
+					$requestData = $this->getTimelinesOfQuestionsWithIDs($ids,$params);
+					$requestDataType = 'question_timeline';
+				}
+				break;
+			case 'featured-questions':
+				$requestData = $this->getFeaturedQuestions($params);
+				$requestDataType = 'question';
+				break;
+			case 'unanswered-questions':
+				$requestData = $this->getUnansweredQuestions($params);
+				$requestDataType = 'question';
+				break;
+			case 'no-answer-questions':
+				$requestData = $this->getQuestionsWithNoAnswers($params);
+				$requestDataType = 'question';
+				break;
+			default:
+				echo 'default';
+				break;
+		}
+
+		return array(
+			'data' => $requestData,
+			'data-type' => $requestDataType
+		);
+	}
 
 	/* Answer Methods */
     /**
      * getAllAnswers simply gives you all answers on a specific site specified with site parameter in requestParams.
      * @param $requestParams: The general request parameters
-     * @return Exception|string
+     * @return string
      */
     public function getAllAnswers($requestParams) {
         return $this->getAnswers('all','',$requestParams);
@@ -43,7 +145,7 @@ class stackexchange
      * getAnswersByIDs returns all answers objects specified by the IDs contained in the semicolon separated string $ids
      * @param $ids: Semicolon separated string with all answer IDs you want to filter
      * @param $requestParams: The general request parameters
-     * @return Exception|string
+     * @return string
      */
     public function getAnswersByIDs($ids,$requestParams){
         return $this->getAnswers('selection',$ids,$requestParams);
@@ -53,7 +155,7 @@ class stackexchange
      * getCommentsForAnswersWithIDs returns all comments for answers specified by IDs in the $ids parameter
      * @param $ids: Semicolon separated string with all answer IDs
      * @param $requestParams: The general request parameters
-     * @return Exception|string
+     * @return string
      */
     public function getCommentsForAnswersWithIDs($ids,$requestParams){
         return $this->getAnswers('comments',$ids,$requestParams);
@@ -63,7 +165,7 @@ class stackexchange
 	/**
 	 * Gets all the questions on the site.
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getAllQuestions($requestParams) {
 		return $this->getQuestions('all','',$requestParams);
@@ -72,7 +174,7 @@ class stackexchange
 	/**
 	 * Returns all the questions with active bounties in the system.
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getFeaturedQuestions($requestParams){
 		return $this->getQuestions('featured','',$requestParams);
@@ -81,7 +183,7 @@ class stackexchange
 	/**
 	 * Returns questions the site considers to be unanswered.
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getUnansweredQuestions($requestParams){
 		return $this->getQuestions('unanswered','',$requestParams);
@@ -90,7 +192,7 @@ class stackexchange
 	/**
 	 * Returns questions which have received no answers.
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getQuestionsWithNoAnswers($requestParams){
 		return $this->getQuestions('no-answers','',$requestParams);
@@ -100,8 +202,9 @@ class stackexchange
 	 * Returns the questions identified in $ids
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
+
 	public function getQuestionsByIDs($ids,$requestParams) {
 		return $this->getQuestions('selection',$ids,$requestParams);
 	}
@@ -110,7 +213,7 @@ class stackexchange
 	 * Gets the answers to a set of questions identified in $ids.
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getAnswersForQuestionsWithIDs($ids,$requestParams){
 		return $this->getQuestions('answers',$ids,$requestParams);
@@ -120,7 +223,7 @@ class stackexchange
 	 * Gets the comments on question identified in $ids.
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getCommentsForQuestionsWithIDs($ids,$requestParams){
 		return $this->getQuestions('comments',$ids,$requestParams);
@@ -130,7 +233,7 @@ class stackexchange
 	 * Get the questions that link to the questions identified by a set of $ids.
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getLinkedQuestionsForQuestionsWithIDs($ids,$requestParams){
 		return $this->getQuestions('linked',$ids,$requestParams);
@@ -140,7 +243,7 @@ class stackexchange
 	 * Get the questions that are related to the questions identified by a set of $ids.
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
 	public function getRelatedQuestionsForQuestionsWithIDs($ids,$requestParams){
 		return $this->getQuestions('related',$ids,$requestParams);
@@ -150,8 +253,9 @@ class stackexchange
 	 * Get the timelines of the questions identified by a set of $ids.
 	 * @param $ids: Semicolon separated string with all question IDs you want to filter
 	 * @param $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
+
 	public function getTimelinesOfQuestionsWithIDs($ids,$requestParams){
 		return $this->getQuestions('timeline',$ids,$requestParams);
 	}
@@ -169,13 +273,10 @@ class stackexchange
 	 * mode 'comments' (*) corresponds to http://api.stackexchange.com/docs/comments-on-answers
 	 * @param string $idList: A list of answer ids to filter (mendatory for (*)-marked modes)
 	 * @param array $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
-    protected function  getAnswers($mode='all', $idList='', $requestParams = array()) {
+	protected function  getAnswers($mode='all', $idList='', $requestParams = array()) {
         $methodsArray = array();
-        $mainMethodArray = array(
-            'name' => 'answers'
-        );
 
         switch ($mode){
             case 'selection':
@@ -209,8 +310,9 @@ class stackexchange
 	 * mode 'no-answers' corresponds to https://api.stackexchange.com/docs/no-answer-questions
 	 * @param string $idList (optional): A list of question ids to filter (mendatory for (*)-marked modes)
 	 * @param array $requestParams: The general request parameters
-	 * @return Exception|string
+	 * @return string
 	 */
+
 	protected function getQuestions($mode='all', $idList='', $requestParams = array()) {
 		$methodsArray = array();
 
@@ -292,7 +394,7 @@ class stackexchange
 				}
 			} catch (Exception $e) {
 				//TODO: Think about an exception return strategy. At the moment simply output error message.
-				echo 'Exception in '.$e->getFile().' at line '.$e->getLine().': '.$e->getMessage().$e->get;
+				echo 'Exception in '.$e->getFile().' at line '.$e->getLine().': '.$e->getMessage();
 			}
 		}
 
@@ -306,6 +408,7 @@ class stackexchange
 	 * @return bool (is this a valid list)
 	 * @throws Exception
 	 */
+
 	protected function isValidFilterList($list){
 		if(!empty($list)) {
 			if(is_string($list)){
@@ -344,6 +447,7 @@ class stackexchange
      *
      *
      * @return string
+     * @throws Exception
      */
     public function makeAPIRequest($methodsArray, $requestParams = array()){
         //Start building the requestURL
@@ -384,12 +488,12 @@ class stackexchange
         //var_dump($requestURL);
 
         //Send request
-        $data = file_get_contents($requestURL);
-        if($data !== false){
+        $data = @file_get_contents($requestURL);
+        if($data !== FALSE){
             //Data received --> Return it json decoded
             return json_decode($data, true);
         } else {
-            return new Exception('API Request failed!');
+            throw new Exception('API Request failed!');
         }
     }
 
