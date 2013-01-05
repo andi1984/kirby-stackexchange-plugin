@@ -24,7 +24,85 @@ class stackexchange
             $this->token = $_token;
         }
     }
-	
+	/*
+	 * Layout Methods
+	 */
+
+	/**
+	 * @param array $dataItem (default null): An associative array containing information about an object returned by the API
+	 * @param string $type (default ''): The $dataItem's API type (e.g. 'answer' or 'question')
+	 * @param string $outputKeys (default ''): A comma separated list of keys for items from the API which should be displayed on screen
+	 * @return string: The HTML Output
+	 */
+
+	public function defaultLayout($dataItem=null, $type='', $outputKeys=''){
+		$output = '';
+		if(!empty($outputKeys) && isset($dataItem)){
+			$dataItemID = (isset($dataItem[$type.'_id'])?$dataItem[$type.'_id']:null);
+
+			$output .= '<div class="stackexchange-item"';
+
+			if(isset($dataItemID)){
+				$output .= 'id="stackexchange-'.$type.'-'.$dataItemID.'"';
+			}
+
+			$output .= '>';
+
+			//Set link to the requested object url
+			if(isset($dataItem['link']) && isset($dataItem['title']) && isset($dataItem['creation_date'])) {
+				$output .= '<div class="stackexchange-object-link-wrapper">';
+				$output .= '<a href="'.$dataItem['link'].'" title="'.$dataItem['title'].'" class="stackexchange-object-link" target="_blank"';
+				if(isset($dataItemID)){
+					$output .= 'id="'.$type.'-'.$dataItemID.'-link"';
+				}
+				$output .= '>';
+				$output .= date('d.m.Y',$dataItem['creation_date']);
+				$output .= '</a>';
+				$output .= '</div>';
+			}
+
+			//... output the requested property keys
+			foreach($outputKeys as $key){
+				$valueForKey = $dataItem[$key];
+				if(isset($valueForKey)){
+					$output .= '<div class="'.$key.'"';
+					if(isset($dataItemID)){
+						$output .= 'id="'.$type.'-'.$dataItemID.'-'.$key.'"';
+					}
+					$output .= '>';
+					if(!is_array($valueForKey)){
+						$output .= $valueForKey;
+
+					} else {
+						if($key == 'owner'){
+							$output .= '<div class="stackexchange-user-banner-wrapper">';
+							$output .= '<a href="'.$valueForKey['link'].'" class="stackexchange-user-banner">';
+							$output .= '<img class="user-pic" src="'.$valueForKey['profile_image'].'"/>';
+							$output .= '<span class="user-name">'.$valueForKey['display_name'].'</span>';
+							$output .= '</a>';
+							$output .= '</div>';
+						} else {
+							foreach($valueForKey as $arrayKey => $arrayKeyValue){
+								$output .= '<div class="'.$arrayKey.'"';
+								if(isset($dataItemID)) {
+									$output .= 'id="'.$key.'-'.$dataItemID.'-'.$arrayKey.'"';
+								}
+								$output .= '>';
+								$output .= $arrayKeyValue;
+								$output .= '</div>';
+							}
+						}
+					}
+					$output .= '</div>';
+				}
+			}
+
+			$output .= '</div>';
+		}
+
+		return $output;
+	}
+
     /*
      * Custom Methods
      */

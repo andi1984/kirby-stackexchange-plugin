@@ -1,128 +1,77 @@
 <?
-	//Create new stackexchangeAPI Object (insert your API Key here as parameter, e.g.new stackexchange('XXXXXXX'))
-	$stackExchangeAPI = new stackexchange();
 
-	//Fetch values from current page object
-	$siteList = (string)(str_replace(' ','',$page->stackexchangesite()));
-	$siteArray = explode(',',$siteList);
+	if($page->stackexchangesite() != null && $page->stackexchangemethod() != null){
+		//Create new stackexchangeAPI Object (insert your API Key here as parameter, e.g.new stackexchange('XXXXXXX'))
+		$stackExchangeAPI = new stackexchange();
 
-	$methodList = (string)(str_replace(' ','',$page->stackexchangemethod()));
-	$methodArray = explode(',',$methodList);
+		//Fetch values from current page object
+		$siteList = (string)(str_replace(' ','',$page->stackexchangesite()));
+		$siteArray = explode(',',$siteList);
 
-	$methodFilterList = (string)(str_replace(' ','',$page->stackexchangefilter()));
-	$methodFilterArray = explode(',',$methodFilterList);
+		$methodList = (string)(str_replace(' ','',$page->stackexchangemethod()));
+		$methodArray = explode(',',$methodList);
 
-	$methodFilteredIDList = (string)(str_replace(' ','',$page->stackexchangemethodids()));
-	$methodFilteredIDArray = explode(',',$methodFilteredIDList);
+		$methodFilterList = (string)(str_replace(' ','',$page->stackexchangefilter()));
+		$methodFilterArray = explode(',',$methodFilterList);
 
-	$methodOutputKeyList = (string)(str_replace(' ','',$page->stackexchangeoutput()));
-	$methodOutputKeyListArray = explode(';',$methodOutputKeyList);
+		$methodFilteredIDList = (string)(str_replace(' ','',$page->stackexchangemethodids()));
+		$methodFilteredIDArray = explode(',',$methodFilteredIDList);
 
-	//Start output
-	$stackAPIOutput = '';
-	$stackAPIOutput .= '<div class="stackexchange-wrapper">';
+		$methodOutputKeyList = (string)(str_replace(' ','',$page->stackexchangeoutput()));
+		$methodOutputKeyListArray = explode(';',$methodOutputKeyList);
 
-	foreach($methodArray as $index => $method){
+		//Start output
+		$stackAPIOutput = '';
+		$stackAPIOutput .= '<div class="stackexchange-wrapper">';
 
-		//For each method...
+		foreach($methodArray as $index => $method){
 
-		//Init parameters
-		$params = array();
+			//For each method...
 
-		//Check whether a site ID is specified to search at --> add it as 'site' URL-parameter
-		if(isset($siteArray[$index])){
-			$site = $siteArray[$index];
-			$params['site'] = $site;
-		}
+			//Init parameters
+			$params = array();
 
-		//Initiate requestData & requestDataType variable
-		$requestData = null;
-		$requestDataType = null;
+			//Check whether a site ID is specified to search at --> add it as 'site' URL-parameter
+			if(isset($siteArray[$index])){
+				$site = $siteArray[$index];
+				$params['site'] = $site;
+			}
 
-		//Add method specific filters if given by the user
-		if(isset($methodFilterArray[$index])){
-			$requestFilter = $methodFilterArray[$index];
-			$params['filter'] = $requestFilter;
-		}
+			//Initiate requestData & requestDataType variable
+			$requestData = null;
+			$requestDataType = null;
 
-		//Execute API request and save result
-		$result = $stackExchangeAPI->executeMethodWithURLPathName($method, $params, $methodFilteredIDArray[$index]);
+			//Add method specific filters if given by the user
+			if(isset($methodFilterArray[$index])){
+				$requestFilter = $methodFilterArray[$index];
+				$params['filter'] = $requestFilter;
+			}
 
-		//Save data and data-type inside corresponding variables
-		$requestData = $result['data'];
-		$requestDataType = $result['data-type'];
+			//Execute API request and save result
+			$result = $stackExchangeAPI->executeMethodWithURLPathName($method, $params, $methodFilteredIDArray[$index]);
 
-		//If the request fetched some data --> output data
-		if(isset($requestData)){
-			//Get all requested object keys
-			$outputKeys = $methodOutputKeyListArray[$index];
+			//Save data and data-type inside corresponding variables
+			$requestData = $result['data'];
+			$requestDataType = $result['data-type'];
 
-			//Save them in an array
-			$outputKeyArray = explode(',',(string)$outputKeys);
+			//If the request fetched some data --> output data
+			if(isset($requestData)){
+				//Get all requested object keys
+				$outputKeyList = $methodOutputKeyListArray[$index];
+				if(!empty($methodOutputKeyList)){
+					//Save them in an array
+					$outputKeys = explode(',',(string)$outputKeyList);
 
-			//Foreach result object..
-			foreach($requestData['items'] as $item){
-				$itemID = (isset($item[$requestDataType.'_id'])?$item[$requestDataType.'_id']:null);
-				$stackAPIOutput .= '<div class="stackexchange-item"';
-					if(isset($itemID)){
-						$stackAPIOutput .= 'id="stackexchange-'.$requestDataType.'-'.$itemID.'"';
+					//Foreach result object..
+					foreach($requestData['items'] as $item){
+						$stackAPIOutput .= $stackExchangeAPI->defaultLayout($item, $requestDataType, $outputKeys);
 					}
-				$stackAPIOutput .= '>';
-
-				//Set link to the requested object url
-				if(isset($item['link']) && isset($item['title']) && isset($item['creation_date'])) {
-					$stackAPIOutput .= '<div class="stackexchange-object-link-wrapper">';
-						$stackAPIOutput .= '<a href="'.$item['link'].'" title="'.$item['title'].'" class="stackexchange-object-link" target="_blank"';
-							if(isset($itemID)){
-								$stackAPIOutput .= 'id="'.$requestDataType.'-'.$itemID.'-link"';
-							}
-						$stackAPIOutput .= '>';
-						$stackAPIOutput .= date('d.m.Y',$item['creation_date']);
-						$stackAPIOutput .= '</a>';
-					$stackAPIOutput .= '</div>';
 				}
-
-					//... output the requested property keys
-					foreach($outputKeyArray as $key){
-						$valueForKey = $item[$key];
-						if(isset($valueForKey)){
-							$stackAPIOutput .= '<div class="'.$key.'"';
-								if(isset($itemID)){
-									$stackAPIOutput .= 'id="'.$requestDataType.'-'.$itemID.'-'.$key.'"';
-								}
-							$stackAPIOutput .= '>';
-							if(!is_array($valueForKey)){
-								$stackAPIOutput .= $valueForKey;
-
-							} else {
-								if($key == 'owner'){
-									$stackAPIOutput .= '<div class="stackexchange-user-banner-wrapper">';
-										$stackAPIOutput .= '<a href="'.$valueForKey['link'].'" class="stackexchange-user-banner">';
-											$stackAPIOutput .= '<img class="user-pic" src="'.$valueForKey['profile_image'].'"/>';
-											$stackAPIOutput .= '<span class="user-name">'.$valueForKey['display_name'].'</span>';
-										$stackAPIOutput .= '</a>';
-									$stackAPIOutput .= '</div>';
-								} else {
-									foreach($valueForKey as $arrayKey => $arrayKeyValue){
-										$stackAPIOutput .= '<div class="'.$arrayKey.'"';
-											if(isset($itemID)) {
-												$stackAPIOutput .= 'id="'.$key.'-'.$itemID.'-'.$arrayKey.'"';
-											}
-										$stackAPIOutput .= '>';
-											$stackAPIOutput .= $arrayKeyValue;
-										$stackAPIOutput .= '</div>';
-									}
-								}
-							}
-							$stackAPIOutput .= '</div>';
-						}
-					}
-
-				$stackAPIOutput .= '</div>';
 			}
 		}
+
+		$stackAPIOutput .= '</div>';
+		echo $stackAPIOutput;
 	}
 
-	$stackAPIOutput .= '</div>';
-	echo $stackAPIOutput;
 ?>
