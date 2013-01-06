@@ -1,11 +1,6 @@
 Kirby CMS - Stack Exchange Plugin (in progess)
 ==========================
 
-News
-----
-- Support for question and answer requests is integrated. Further object type integrations will follow soon…
-- Raw Kirby Integration done -> but it needs a more user-friendly integration (see [Setup-Wiki](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/Plugin-Setup) for more details)
-
 What?
 ----
 > Stack Exchange is a fast-growing network of 92 question and answer sites on diverse topics from software programming to cooking to photography and gaming.
@@ -24,34 +19,21 @@ So I decided to write this Stack Exchange Plugin for Kirby CMS also for my perso
 
 How?
 ----
-I want to write a fully flexible Stack Exchange plugin to provide everyone the full power of the API. I definitely want to use this plugin a lot in the future also for my personal blog, sites etc.
+I want to write a fully flexible Stack Exchange plugin to provide everyone the full power of the API. I definitely want to use this plugin a lot in the future also for [my personal blog](http://dev.leben-zwonull.de/blog), sites etc.
 
-I hope you all like the idea and I hope you will give me feedback, feature, change or pull requests. ;-)
+I hope you like the idea and I hope you will give me feedback, feature, change or pull requests. ;-)
 
-Set Up
------
-I plan to write a lot of functions for almost every API Use-Case. Indeed this is a longterm task, but I definitely want to make the life & work with this plugin as easy as possible.
+Are you interested?
+----
 
-You don't necessarily need to [register an Stack Exchange API Key](http://stackapps.com/apps/oauth/register), but you have fewer request permissions per day without.
-
-You can use your key for requests by adding your API Key when you construct your stack exchange object:
-
-`$stackExchangeObj = new stackexchange('YOUR API KEY');`
-
-The plugin will use your api key for all further requests.
-
-But again: The key parameter is optional. You don't need it.
-
-Furthermore I plan to add a nice data output structure for release 1.0.
-
-*So please let me know about your use cases, how you would use it or which features you want to have. This would be a really great help to get the right structure and features.*
-
-For more information, see the [Setup-Wiki-Page](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/Plugin-Setup)
+Yes? Than take a look on the [Wiki-Page](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/). I'll update the documentation there regularly.
 
 Finally
 -----
 
-I hope you like it & I always love to come in touch with other developers on [twitter](http://www.twitter.com/andi1984).
+I hope you like it.
+
+Questions? Simply drop me a line on [Twitter](http://www.twitter.com/andi1984).
 
 Greets, 
 
