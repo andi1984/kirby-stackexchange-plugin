@@ -26,7 +26,7 @@ I hope you like the idea and I hope you will give me feedback, feature, change o
 Are you interested?
 ----
 
-Yes? Than take a look on the [Wiki-Page](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/). I'll update the documentation there regularly.
+Yes? Then take a look on the [Wiki-Page](https://github.com/andi1984/kirby-stackexchange-plugin/wiki/). I'll update the documentation there regularly.
 
 Finally
 -----
