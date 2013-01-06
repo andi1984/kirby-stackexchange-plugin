@@ -20,4 +20,4 @@ stackexchangemethodids: 7770
 
 ----
 
-stackexchangeoutput: body
+stackexchangeoutput: body, owner
